@@ -1,5 +1,10 @@
 # Hot R.O.D. - Rides on Demand
 
+*** Update
+`GOOS=linux make build-examples`
+`docker build -t rperry2174/hotrod-golang ./examples/hotrod --build-arg TARGETARCH=linux/amd64`
+`docker push rperry2174/hotrod-golang`
+
 This is a demo application that consists of several microservices and illustrates
 the use of the OpenTracing API. It can be run standalone, but requires Jaeger backend
 to view the traces. A tutorial / walkthrough is available:
