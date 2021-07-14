@@ -1,13 +1,11 @@
 version: '3.7'
 services:
   jaeger:
-    # network_mode: host
     image: jaegertracing/all-in-one:latest
     ports:
       - "6831:6831/udp"
       - "16686:16686"
   frontend:
-    # network_mode: host
     image: rperry2174/hotrod-golang:latest
     ports:
       - "8080:8080"
@@ -19,10 +17,7 @@ services:
       - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
     depends_on:
       - jaeger
-    # networks:
-    #   - jaeger-example
   customer:
-    # network_mode: host
     image: rperry2174/hotrod-golang:latest
     ports:
       - "8081:8081"
@@ -34,10 +29,7 @@ services:
       - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
     depends_on:
       - jaeger
-    # networks:
-    #   - jaeger-example
   driver:
-    # network_mode: host
     image: rperry2174/hotrod-golang:latest
     ports:
       - "8082:8082"
@@ -49,10 +41,7 @@ services:
       - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
     depends_on:
       - jaeger
-    # networks:
-    #   - jaeger-example
   route:
-    # network_mode: host
     image: rperry2174/hotrod-golang:latest
     ports:
       - "8083:8083"
@@ -64,13 +53,9 @@ services:
       - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
     depends_on:
       - jaeger
-    # networks:
-    #   - jaeger-example
   pyroscope:
     image: "pyroscope/pyroscope:latest"
     ports:
       - "4040:4040"
     command:
       - "server"
-# networks:
-#   jaeger-example:
