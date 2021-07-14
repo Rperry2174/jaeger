@@ -66,3 +66,10 @@ services:
       driver: loki
       options:
         loki-url: 'http://localhost:3100/api/prom/push'
+
+  pyroscope:
+    image: "pyroscope/pyroscope:latest"
+    ports:
+      - "4040:4040"
+    command:
+      - "server"

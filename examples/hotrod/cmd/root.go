@@ -28,6 +28,7 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	"github.com/jaegertracing/jaeger/examples/hotrod/services/config"
+	"github.com/pyroscope-io/pyroscope/pkg/agent/profiler"
 )
 
 var (
@@ -58,6 +59,11 @@ var RootCmd = &cobra.Command{
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	profiler.Start(profiler.Config{
+		ApplicationName: os.Getenv("PYROSCOPE_APPLICATION_NAME"),
+		ServerAddress:   os.Getenv("PYROSCOPE_SERVER_ADDRESS"),
+	})
+
 	if err := RootCmd.Execute(); err != nil {
 		logger.Fatal("We bowled a googly", zap.Error(err))
 		os.Exit(-1)
