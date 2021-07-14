@@ -5,6 +5,8 @@ services:
     image: grafana/grafana:7.1.4
     ports:
       - '3000:3000'
+    environment:
+      - GF_INSTALL_PLUGINS=pyroscope-datasource
     volumes:
       - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
@@ -40,19 +42,84 @@ services:
       options:
         loki-url: 'http://localhost:3100/api/prom/push'
 
-  hotrod:
-    image: jaegertracing/example-hotrod:latest
+  # hotrod:
+  #   image: jaegertracing/example-hotrod:latest
+  #   ports:
+  #     - '8080:8080'
+  #     - '8083:8083'
+  #   command: ["-m","prometheus","all"]
+  #   environment:
+  #     - JAEGER_AGENT_HOST=jaeger
+  #     - JAEGER_AGENT_PORT=6831
+  #   logging:
+  #     driver: loki
+  #     options:
+  #       loki-url: 'http://localhost:3100/api/prom/push'
+
+  frontend:
+    image: rperry2174/hotrod-golang:latest
     ports:
-      - '8080:8080'
-      - '8083:8083'
-    command: ["-m","prometheus","all"]
-    environment:
-      - JAEGER_AGENT_HOST=jaeger
-      - JAEGER_AGENT_PORT=6831
+      - "8080:8080"
     logging:
       driver: loki
       options:
         loki-url: 'http://localhost:3100/api/prom/push'
+    command: ["frontend"]
+    environment:
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - PYROSCOPE_APPLICATION_NAME=hotrod.golang.frontend
+      - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
+    depends_on:
+      - jaeger
+  customer:
+    image: rperry2174/hotrod-golang:latest
+    ports:
+      - "8081:8081"
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/api/prom/push'
+    command: ["customer"]
+    environment:
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - PYROSCOPE_APPLICATION_NAME=hotrod.golang.customer
+      - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
+    depends_on:
+      - jaeger
+  driver:
+    image: rperry2174/hotrod-golang:latest
+    ports:
+      - "8082:8082"
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/api/prom/push'
+    command: ["driver"]
+    environment:
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - PYROSCOPE_APPLICATION_NAME=hotrod.golang.driver
+      - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
+    depends_on:
+      - jaeger
+  route:
+    image: rperry2174/hotrod-golang:latest
+    ports:
+      - "8083:8083"
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/api/prom/push'
+    command: ["route"]
+    environment:
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - PYROSCOPE_APPLICATION_NAME=hotrod.golang.route
+      - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
+    depends_on:
+      - jaeger
 
   prometheus:
     image: prom/prometheus:v2.19.1
