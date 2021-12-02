@@ -2,11 +2,11 @@ version: '2'
 
 services:
   grafana:
-    image: grafana/grafana:7.1.4
+    image: grafana/grafana:7.3.0
     ports:
       - '3000:3000'
     environment:
-      - GF_INSTALL_PLUGINS=pyroscope-datasource
+      - GF_INSTALL_PLUGINS=pyroscope-datasource,pyroscope-panel
     volumes:
       - ./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
       - ./grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
